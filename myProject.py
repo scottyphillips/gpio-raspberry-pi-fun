@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
 # This is just a stupid little python script to exercise the Raspberry Pi
-# This program is design specifically to run on RPi series 1 model B since
-# thats what I own.
+# This program is designed specifically to run on RPi series 1 model B since
+# thats what I own. Schematic for the useless thingy i built might come later.
 import RPi.GPIO as GPIO
 import time, sys, os
 import RPIO
@@ -25,7 +25,7 @@ min_servo_pos = 1000
 servo_pos = init_servo_pos
 exitProgram = 0
 
-#functions
+# functions
 # redirtect_stdout is mainly used to hide some output from RPIO.
 def redirect_stdout():
     sys.stdout.flush() # <--- important when redirecting to files
