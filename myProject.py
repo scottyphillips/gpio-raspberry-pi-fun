@@ -83,43 +83,49 @@ def button3(channel):
    print("Button 3 Pressed!")
    serverAntiClockwise(10)
 
+def myExit():
+   RPIO.cleanup()
+   GPIO.cleanup()
+   sys.exit("Exiting Program")
 
 # initialisation
-GPIO.setmode(GPIO.BCM)
-RPIO.setwarnings(False)
-PWM.set_loglevel(PWM.LOG_LEVEL_ERRORS)
-PWM.setup()
-redirect_stdout()
-print("Setting up Servo..")
-servo = PWM.Servo()
+try:
+    GPIO.setmode(GPIO.BCM)
+    RPIO.setwarnings(False)
+    PWM.set_loglevel(PWM.LOG_LEVEL_ERRORS)
+    PWM.setup()
+    redirect_stdout()
+    print("Setting up Servo..")
+    servo = PWM.Servo()
 
-# P0 and P4 are for the LEDs.
-GPIO.setup(p0, GPIO.OUT)
-GPIO.setup(p4, GPIO.OUT)
+    # P0 and P4 are for the LEDs.
+    GPIO.setup(p0, GPIO.OUT)
+    GPIO.setup(p4, GPIO.OUT)
 
-# P2, P3 and P5 are for the buttons
-GPIO.setup(p2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-GPIO.setup(p3, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-GPIO.setup(p5, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    # P2, P3 and P5 are for the buttons
+    GPIO.setup(p2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    GPIO.setup(p3, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+    GPIO.setup(p5, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
-# P1 is the PWM signal for the servo.
-servo.set_servo(p1, servo_position)
+    # P1 is the PWM signal for the servo.
+    servo.set_servo(p1, servo_position)
 
-# add listeners.
-GPIO.add_event_detect(p2,
- GPIO.RISING, callback=button1, bouncetime=300)
-GPIO.add_event_detect(p3,
- GPIO.RISING, callback=button2, bouncetime=300)
-GPIO.add_event_detect(p5,
- GPIO.RISING, callback=button3, bouncetime=300)
+    # add listeners.
+    GPIO.add_event_detect(p2,
+     GPIO.RISING, callback=button1, bouncetime=300)
+    GPIO.add_event_detect(p3,
+     GPIO.RISING, callback=button2, bouncetime=300)
+    GPIO.add_event_detect(p5,
+     GPIO.RISING, callback=button3, bouncetime=300)
 
-# main program loop
-while(exitProgram == 0):
-   light(p0, p4)
-   time.sleep(timer)
-   light(p4, p0)
-   time.sleep(timer)
+    # main program loop
+    while(exitProgram == 0):
+       light(p0, p4)
+       time.sleep(timer)
+       light(p4, p0)
+       time.sleep(timer)
 
-# cleanup pins and go home
-GPIO.cleanup()
-sys.exit("Exiting Program")
+# Catch lazy people who press control C like me.
+except KeyboardInterrupt:
+   myExit()
+myExit()
