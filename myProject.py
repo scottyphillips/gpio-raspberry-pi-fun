@@ -108,7 +108,7 @@ try:
     GPIO.setup(p5, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
     # P1 is the PWM signal for the servo.
-    servo.set_servo(p1, servo_position)
+    servo.set_servo(p1, servo_pos)
 
     # add listeners.
     GPIO.add_event_detect(p2,
