@@ -5,7 +5,8 @@
 # thats what I own. Schematic for the useless thingy i built might come later.
 import RPi.GPIO as GPIO
 import time, sys, os
-import pigpio
+import RPIO
+from RPIO import PWM
 
 # Global variables
 # P0 to P5 corresponds to the labelling on my RPi cobbler.
@@ -50,30 +51,30 @@ def switchTimer(value):
   return value
 
 # servoClockwise is used to allow a fixed adjustment of the servo.
-def servoClockwise(inc):
- global servo_pos
- global pi
- if(servo_pos >= min_servo_pos ):
-   servo_pos -= inc
-   pi.set_servo_pulsewidth(p1, servo_pos)
+# def servoClockwise(inc):
+#  global servo_pos
+#  global servo
+#  if(servo_pos >= min_servo_pos ):
+#    servo_pos -= inc
+#    servo.set_servo(p1, servo_pos)
 
 # servoAntiClocwise allows a user to hold down the button to rotate
-def serverAntiClockwise(inc):
-  global servo_pos
-  global pi
-  # allow user to hold down button to rotate servo.
-  if(servo_pos <= max_servo_pos ):
-     while (GPIO.input(p5) == True and servo_pos < max_servo_pos ):
-       time.sleep(0.05)
-       servo_pos+= inc
-       pi.set_servo_pulsewidth(p1, servo_pos)
+# def serverAntiClockwise(inc):
+#  global servo_pos
+#  global servo
+#  # allow user to hold down button to rotate servo.
+#  if(servo_pos <= max_servo_pos ):
+#     while (GPIO.input(p5) == True and servo_pos < max_servo_pos ):
+#       time.sleep(0.05)
+#       servo_pos+= inc
+#       servo.set_servo(p1, servo_pos)
 
 # Used in conjunction with the listeners
 def button1(channel):
    global timer
    print ("Button 1 Pressed!")
    timer = switchTimer(timer)
-   servoClockwise(100)
+   # servoClockwise(100)
 
 def button2(channel):
    global exitProgram
@@ -82,7 +83,7 @@ def button2(channel):
 
 def button3(channel):
    print("Button 3 Pressed!")
-   serverAntiClockwise(10)
+   # serverAntiClockwise(10)
 
 def myExit():
    RPIO.cleanup()
@@ -92,11 +93,12 @@ def myExit():
 # initialisation
 try:
     GPIO.setmode(GPIO.BCM)
+    RPIO.setwarnings(False)
+    PWM.set_loglevel(PWM.LOG_LEVEL_ERRORS)
+    PWM.setup()
     redirect_stdout()
     print("Setting up Servo..")
-    pi = pigpio.pi()
-    pi.set_servo_pulsewidth(p1, init_servo_pos)
-
+    servo = PWM.Servo()
     print("Servo initialized")
 
     # P0 and P4 are for the LEDs.
@@ -107,6 +109,11 @@ try:
     GPIO.setup(p2, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
     GPIO.setup(p3, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
     GPIO.setup(p5, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+
+    print("set servo PWM signal")
+    # P1 is the PWM signal for the servo.
+    servo.set_servo(p1, servo_pos)
+    print("done")
 
     # add listeners.
     GPIO.add_event_detect(p2,
